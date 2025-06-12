@@ -92,29 +92,27 @@
 
     <a href="dissolve.html" class="scroll-button">다음 페이지로</a>
 
-    <script>
-        let lastScrollTop = 0;
-        const button = document.querySelector('.scroll-button');
-        const MIN_SCROLL = window.innerHeight * 1.5; // 150vh
+   <script>
+    let lastScrollTop = 0;
+    const button = document.querySelector('.scroll-button');
+    const MIN_SCROLL = window.innerHeight * 1.5; // 150vh
+    const SCROLL_THRESHOLD = 16; // 16px 스크롤 임계값
 
-        window.addEventListener('scroll', () => {
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            
-            // 150vh 이상 스크롤된 상태에서만 동작
-            if (scrollTop > MIN_SCROLL) {
-                if (scrollTop < lastScrollTop) {
-                    // 위로 스크롤
-                    button.classList.remove('hidden');
-                } else {
-                    // 아래로 스크롤
-                    button.classList.add('hidden');
-                }
-            } else {
-                button.classList.remove('hidden');
-            }
-            
-            lastScrollTop = scrollTop;
-        });
-    </script>
+    window.addEventListener('scroll', () => {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollDelta = scrollTop - lastScrollTop;
+        
+        // 150vh 이내 영역으로 진입하거나
+        // 150vh 이상 영역에서 16px 이상 아래로 스크롤할 경우 버튼 숨김
+        if (scrollTop <= MIN_SCROLL || (scrollTop > MIN_SCROLL && scrollDelta >= SCROLL_THRESHOLD)) {
+            button.classList.add('hidden');
+        } else if (scrollTop > MIN_SCROLL && scrollDelta < 0) {
+            // 위로 스크롤할 때만 버튼 표시
+            button.classList.remove('hidden');
+        }
+        
+        lastScrollTop = scrollTop;
+    });
+</script>
 </body>
 </html>

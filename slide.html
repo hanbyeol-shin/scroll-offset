@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scroll Button Interaction</title>
+    <title>Scroll Offset - Slide</title>
     <style>
         :root {
             --size-700: 3.5rem;
@@ -38,37 +38,39 @@
         .scroll-button {
             position: fixed;
             bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 1rem;
+            right: 1rem;
+            transform: translateY(0);
             display: flex;
-            height: var(--size-700, 3.5rem);
-            padding: 0rem var(--spacing-200, 1rem);
+            height: var(--size-700);
+            padding: 0;
             justify-content: center;
             align-items: center;
-            gap: var(--spacing-75, 0.375rem);
-            flex: 1 0 0;
-            min-width: 200px;
-            border-radius: var(--radius-150, 0.75rem);
-            background: var(--background-active-primary, #0114A7);
+            gap: var(--spacing-75);
+            border-radius: var(--radius-150);
+            background: var(--background-active-primary);
             color: white;
             border: none;
             font-size: 16px;
-            transition: transform 0.3s ease-in-out;
             cursor: pointer;
             z-index: 10;
             white-space: nowrap;
+            text-decoration: none;
+            width: calc(100% - 2rem);
+            transition: transform 300ms cubic-bezier(0.42, 0, 0.2, 1);
         }
 
         .scroll-button.hidden {
-            transform: translate(-50%, 200%);
+            transform: translateY(200%);
+            transition: transform 300ms cubic-bezier(0.8, 0, 0.58, 1);
         }
     </style>
 </head>
 <body>
     <div class="content">
         <div class="section">
-            <h1>Scroll Button Interaction</h1>
-            <p>스크롤을 내려서 버튼의 동작을 확인해보세요.</p>
+            <h1>Scroll Offset - Slide</h1>
+            <p>Slide 인터랙션 페이지입니다. 스크롤을 내려서 버튼의 동작을 확인해보세요.</p>
         </div>
         <div class="section">
             <h2>Section 1</h2>
@@ -88,39 +90,29 @@
         </div>
     </div>
 
-    <button class="scroll-button">Scroll to Top</button>
+    <a href="dissolve.html" class="scroll-button">다음 페이지로</a>
 
     <script>
         let lastScrollTop = 0;
         const button = document.querySelector('.scroll-button');
         const MIN_SCROLL = window.innerHeight * 1.5; // 150vh
+        const SCROLL_THRESHOLD = 16; // 16px 스크롤 임계값
 
         window.addEventListener('scroll', () => {
             const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const scrollDelta = scrollTop - lastScrollTop;
             
-            // 150vh 이상 스크롤된 상태에서만 동작
-            if (scrollTop > MIN_SCROLL) {
-                if (scrollTop < lastScrollTop) {
-                    // 위로 스크롤
-                    button.classList.remove('hidden');
-                } else {
-                    // 아래로 스크롤
-                    button.classList.add('hidden');
-                }
-            } else {
+            // 150vh 이내 영역으로 진입하거나
+            // 150vh 이상 영역에서 16px 이상 아래로 스크롤할 경우 버튼 숨김
+            if (scrollTop <= MIN_SCROLL || (scrollTop > MIN_SCROLL && scrollDelta >= SCROLL_THRESHOLD)) {
+                button.classList.add('hidden');
+            } else if (scrollTop > MIN_SCROLL && scrollDelta < 0) {
+                // 위로 스크롤할 때만 버튼 표시
                 button.classList.remove('hidden');
             }
             
             lastScrollTop = scrollTop;
         });
-
-        // 버튼 클릭 시 최상단으로 스크롤
-        button.addEventListener('click', () => {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
     </script>
 </body>
-</html> 
+</html>
